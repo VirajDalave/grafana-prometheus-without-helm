@@ -3,7 +3,9 @@
 Have a Kubernetes cluster and kubectl connfigured
 ## Applying the manifests
 `git clone https://github.com/VirajDalave/grafana-prometheus-without-helm.git`
+
 `cd prometheus-setup && kubectl apply -f .`
+
 `cd ../grafana-setup && kubectl apply-f .`
 
 This will create the pods and services in "monitoring" namespace
