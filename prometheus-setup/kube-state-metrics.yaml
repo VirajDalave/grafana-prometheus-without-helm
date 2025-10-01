@@ -16,6 +16,7 @@ rules:
       - endpoints
       - namespaces
       - nodes
+      - configmaps
     verbs: ["get","list","watch"]
   - apiGroups: ["apps"]
     resources: ["deployments","daemonsets","replicasets","statefulsets"]
