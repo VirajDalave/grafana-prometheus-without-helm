@@ -17,6 +17,54 @@ data:
           severity: slack
         annotations:
           summary: High Memory Usage
+      
+      - alert: NodeNotReady
+        expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node not ready"
+          description: "Kubernetes node {{ $labels.node }} has been NotReady for more than 5 minutes."
+
+      - alert: HighNodeCPU
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "Node {{ $labels.instance }} CPU usage > 80% for 5 minutes."
+
+      # 3. High Memory utilization (>80% for 5m)
+      - alert: HighNodeMemory
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Memory usage"
+          description: "Node {{ $labels.instance }} memory usage > 80%."
+
+      # 4. Pod crash looping
+      - alert: PodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total[5m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod crash looping"
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently."
+
+      # 5. HTTP 5xx errors from services
+      - alert: HighHTTP5xx
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) by (service) > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High rate of HTTP 5xx errors"
+          description: "Service {{ $labels.service }} is returning 5xx responses at a high rate."
   prometheus.yml: |-
     global:
       scrape_interval: 5s
