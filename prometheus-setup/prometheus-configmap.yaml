@@ -11,7 +11,7 @@ data:
     - name: pods alert
       rules:
       - alert: High Pod Memory
-        expr: sum(container_memory_usage_bytes) > 1
+        expr: sum(container_memory_usage_bytes) > 4294967296
         for: 1m
         labels:
           severity: slack
